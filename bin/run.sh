@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-export APP_ENV="local"
+export APP_ENV="live"
 
 function start () {
     source .venv/bin/activate
