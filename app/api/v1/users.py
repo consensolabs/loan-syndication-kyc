@@ -38,6 +38,7 @@ FIELDS = {
         "maxlength": 64,
     },
     "info": {"type": "dict", "required": False},
+    "shared_id": {"type": "string", "required": True},
 }
 
 
@@ -47,6 +48,7 @@ def validate_user_create(req, res, resource, params):
         "email": FIELDS["email"],
         "password": FIELDS["password"],
         "info": FIELDS["info"],
+        "shared_id": FIELDS["shared_id"],
     }
 
     v = Validator(schema)
@@ -67,6 +69,7 @@ class Collection(BaseResource):
             user = User()
             user.username = user_req["username"]
             user.email = user_req["email"]
+            user.shared_id = user_req["shared_id"]
             user.password = hash_password(user_req["password"]).decode("utf-8")
             user.info = user_req["info"] if "info" in user_req else None
             sid = uuid()
@@ -159,6 +162,7 @@ class UserInformation(BaseResource):
             userinfo.dob = user_req["dob"]
             userinfo.contact = user_req["contact"]
             userinfo.nationality = user_req["nationality"]
+            userinfo.profile_strength = user_req["profile_strength"]
             session.add(userinfo)
             self.on_success(res, None)
         else:
@@ -198,6 +202,7 @@ class AllUserInformation(BaseResource):
             userinfo.dob = user_req.get("dob") if user_req.get("dob") else userinfo.dob
             userinfo.contact = user_req.get("contact") if user_req.get("contact") else userinfo.contact
             userinfo.nationality = user_req.get("nationality") if user_req.get("nationality") else userinfo.nationality
+            userinfo.profile_strength = user_req.get("profile_strength") if user_req.get("profile_strength") else userinfo.profile_strength
             userinfo.verified = user_req.get("verified") if user_req.get("verified") is not None else userinfo.verified
             session.add(userinfo)
             self.on_success(res, None)
@@ -211,11 +216,19 @@ class AllUserInformation(BaseResource):
 
         try:
             if user_req.get("user_id"):
-                userinfo_db = UserInfo.find_by_user_id(session=session, user_id=user_req["user_id"]).to_dict()
+                user_db = [User.find_by_user_id(session=session, user_id=user_req["user_id"])]
+            elif user_req.get("shared_id"):
+                user_db = [User.find_by_shared_id(session=session, id=user_req["shared_id"])]
             else:
-                userinfo_db = session.query(UserInfo).all()
-                if userinfo_db:
-                    userinfo_db = [info.to_dict() for info in userinfo_db]
+                user_db = session.query(User).all()
+            if user_db:
+                userinfo_db = []
+                # fetching both user and userinfo table
+                for user in user_db:
+                    user_details = user.to_dict()
+                    user_details.update(user.userinfo[0].to_dict() if user.userinfo else {})
+                    userinfo_db.append(user_details)
+
             self.on_success(res, userinfo_db)
         except NoResultFound:
             raise UserNotExistsError("user id: %s" % user_req["user_id"])

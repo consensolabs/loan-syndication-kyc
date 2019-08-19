@@ -34,6 +34,7 @@ class BaseResource(object):
         meta = OrderedDict()
         meta["code"] = error["code"]
         meta["message"] = error["message"]
+        meta["status"] = False
 
         obj = OrderedDict()
         obj["meta"] = meta
@@ -44,6 +45,7 @@ class BaseResource(object):
         meta = OrderedDict()
         meta["code"] = 200
         meta["message"] = "OK"
+        meta["status"] = True
 
         obj = OrderedDict()
         obj["meta"] = meta
