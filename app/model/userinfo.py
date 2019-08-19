@@ -11,11 +11,12 @@ from app.model import Base, User
 class UserInfo(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.user_id'))
-    address = Column(String(20), nullable=False)
+    address = Column(String(150), nullable=False)
     dob = Column(Date, nullable=False)
     contact = Column(String(15), nullable=True)
-    nationality = Column(String(50), nullable=False)
+    nationality = Column(String(20), nullable=False)
     verified = Column(Boolean, nullable=False, default=False)
+    profile_strength = Column(Integer,  nullable=True)
 
     user = relationship("User", back_populates="userinfo")
 
@@ -36,7 +37,7 @@ class UserInfo(Base):
         except NoResultFound:
             return None
 
-    FIELDS = {"address": str, "dob": str, "contact": str, "nationality": str, "verified": bool}
+    FIELDS = {"address": str, "dob": str, "contact": str, "nationality": str, "verified": bool, "profile_strength": int}
 
     FIELDS.update(Base.FIELDS)
     FIELDS.update(User.FIELDS)

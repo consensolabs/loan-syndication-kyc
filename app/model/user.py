@@ -4,16 +4,17 @@ from sqlalchemy import Column
 from sqlalchemy import String, Integer, LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm.exc import NoResultFound
 
 from app.model import Base
 from app.config import UUID_LEN
 from app.utils import alchemy
 
 
-
-
 class User(Base):
+
     user_id = Column(Integer, primary_key=True)
+    shared_id = Column(String(80), unique=True, nullable=False)
     username = Column(String(20), nullable=False)
     email = Column(String(320), unique=True, nullable=False)
     password = Column(String(80), nullable=False)
@@ -45,6 +46,17 @@ class User(Base):
     @classmethod
     def find_by_sid(cls, session, sid):
         return session.query(User).filter(User.sid == sid).one()
+
+    @classmethod
+    def find_by_shared_id(cls, session, id):
+        return session.query(User).filter(User.shared_id == id).one()
+
+    @classmethod
+    def find_by_user_id(cls, session, user_id):
+        try:
+            return session.query(User).filter(User.user_id == user_id).one()
+        except NoResultFound:
+            return None
 
     FIELDS = {"username": str, "email": str, "info": alchemy.passby, "token": str, "user_id": int}
 
