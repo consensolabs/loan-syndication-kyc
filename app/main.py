@@ -3,7 +3,7 @@
 import falcon
 
 from app import log
-from app.middleware import AuthHandler, JSONTranslator, DatabaseSessionManager
+from app.middleware import AuthHandler, JSONTranslator, DatabaseSessionManager, HandleCORS
 from app.database import db_session, init_session
 
 from app.api.common import base
@@ -29,7 +29,7 @@ class App(falcon.API):
 
 
 init_session()
-middleware = [AuthHandler(), JSONTranslator(), DatabaseSessionManager(db_session)]
+middleware = [AuthHandler(), JSONTranslator(), DatabaseSessionManager(db_session), HandleCORS()]
 application = App(middleware=middleware)
 
 
