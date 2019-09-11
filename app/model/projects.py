@@ -31,6 +31,13 @@ class Projects(Base):
         except NoResultFound:
             return None
 
+    @classmethod
+    def find_by_project_id(cls, session, project_id):
+        try:
+            return session.query(Projects).filter(Projects.id == project_id).one()
+        except NoResultFound:
+            return None
+
     FIELDS = {"name": str, "p_revenue": float,"p_net_income": float,
               "p_total_assets": float, "fund_source": str}
 

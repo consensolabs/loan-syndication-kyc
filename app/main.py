@@ -7,7 +7,7 @@ from app.middleware import AuthHandler, JSONTranslator, DatabaseSessionManager, 
 from app.database import db_session, init_session
 
 from app.api.common import base
-from app.api.v1 import users
+from app.api.v1 import users, projects
 from app.errors import AppError
 
 LOG = log.get_logger()
@@ -24,6 +24,8 @@ class App(falcon.API):
         self.add_route("/v1/users/self/login", users.Self())
         self.add_route("/v1/users/info/self", users.UserInformation())
         self.add_route("/v1/users/info", users.AllUserInformation())
+
+        self.add_route("/v1/projects", projects.Project())
 
         self.add_error_handler(AppError, AppError.handle)
 
