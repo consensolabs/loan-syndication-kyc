@@ -231,7 +231,7 @@ class AllUserInformation(BaseResource):
 
             self.on_success(res, userinfo_db)
         except NoResultFound:
-            raise UserNotExistsError("user id: %s" % user_req["user_id"])
+            raise UserNotExistsError("user id: %s, shared id: %s" % (user_req.get("user_id"), user_req.get("shared_id")))
 
 
 

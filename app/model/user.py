@@ -26,6 +26,7 @@ class User(Base):
 
     userinfo = relationship("UserInfo", back_populates="user")
     userroles = relationship("UserRoles", back_populates="user")
+    projects = relationship("Projects", back_populates="user")
 
     def __repr__(self):
         return "<User(name='%s', email='%s', token='%s', info='%s')>" % (
@@ -49,7 +50,11 @@ class User(Base):
 
     @classmethod
     def find_by_shared_id(cls, session, id):
-        return session.query(User).filter(User.shared_id == id).one()
+
+        try:
+            return session.query(User).filter(User.shared_id == id).one()
+        except NoResultFound:
+            return None
 
     @classmethod
     def find_by_user_id(cls, session, user_id):
